@@ -1,3 +1,2 @@
-# The-Airship-Project
-Скетчи для загрузки в дирижабли и другие материалы
-некоторые  учатски кода взяты с канала AlexGyver
+# The-AirShip-Project
+ 
