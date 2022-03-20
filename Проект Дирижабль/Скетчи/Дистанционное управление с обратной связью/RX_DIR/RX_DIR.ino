@@ -32,8 +32,8 @@ RF24 radio(9, 10);   // "создать" модуль на пинах 9 и 10 д
 byte pipeNo;
 byte address[][6] = {"1Node", "2Node", "3Node", "4Node", "5Node", "6Node"}; // возможные номера труб
 
-int recieved_data[2];         // массив принятых данных
-int last_recieved_data[2];     // прошлые принятые данные
+int recieved_data[4];         // массив принятых данных
+int last_recieved_data[4];     // прошлые принятые данные
 boolean flag;                 
 int telemetry[2];             // массив данных телеметрии (то что шлём на передатчик)
 
@@ -45,12 +45,16 @@ byte pin3 = 6;
 byte pin4 = 7;
 byte servo = 3;
 byte servo2 = 9;
+
 Servo myservo1;
 Servo myservo2;
 
 void setup() {
   myservo1.attach(servo);
   myservo2.attach(servo2);
+
+  myservo1.write(90);
+  myservo2.write(90);
   Serial.begin(9600);
   radioSetup();
   pinMode(pin1, OUTPUT); 
@@ -59,6 +63,11 @@ void setup() {
   pinMode(pin4, OUTPUT);
 
   
+
+  digitalWrite(pin1,0);
+  digitalWrite(pin2,0);
+  digitalWrite(pin3,0);
+  digitalWrite(pin4,0);
 }
 
 void loop() {
@@ -79,16 +88,36 @@ if(millis() - Servo_time > 200){                                         // ка
     }
   }
   
- 
+  Serial.println(recieved_data[2]);
+  Serial.println(recieved_data[3]);
   if(flag == true){
   myservo1.attach(servo);
   myservo2.attach(servo2);
   myservo1.write(recieved_data[0]);
   myservo2.write(recieved_data[1]);
-  flag = 0;                                            
+  flag = 0;
+  if(recieved_data[2]==0 and recieved_data[3]==1){
+    digitalWrite(pin1,1);
+    digitalWrite(pin2,0);
+    digitalWrite(pin3,1);
+    digitalWrite(pin4,0);                                            
+  }
+  else if(recieved_data[2]==1 and recieved_data[3]==0){
+    digitalWrite(pin1,0);
+    digitalWrite(pin2,1);
+    digitalWrite(pin3,0);
+    digitalWrite(pin4,1);  
+  }
+  else if(recieved_data[2]==1 and recieved_data[3]==1){
+    digitalWrite(pin1,0);
+    digitalWrite(pin2,0);
+    digitalWrite(pin3,0);
+    digitalWrite(pin4,0);  
+  }
   }
   else if(flag == false){
     myservo1.detach();
+    myservo2.detach();
    
   }
   Servo_time = millis();
