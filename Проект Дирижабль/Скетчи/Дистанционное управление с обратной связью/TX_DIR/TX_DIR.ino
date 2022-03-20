@@ -44,7 +44,7 @@ Adafruit_SSD1306 display(SCREEN_WIDHT, SCREEN_HEIGHT, &Wire, OLED_RESET);
 //--------------------- ПЕРЕМЕННЫЕ ----------------------
 byte address[][6] = {"1Node", "2Node", "3Node", "4Node", "5Node", "6Node"}; // возможные номера труб
 
-int transmit_data[2];          // массив пересылаемых данных
+int transmit_data[4];          // массив пересылаемых данных
 int telemetry[2];              // массив принятых от приёмника данных телеметрии
 byte latest_data[2];
 byte rssi;
@@ -54,6 +54,8 @@ unsigned long RSSI_timer;
 
 #define JpinX A2
 #define JpinY A1
+#define Butt1 7
+#define Butt2 8
 
 void setup() {
   
@@ -61,7 +63,10 @@ void setup() {
   radioSetup();
   pinMode(JpinX,INPUT);
   pinMode(JpinY,INPUT);
+  pinMode(Butt1,INPUT_PULLUP);
+  pinMode(Butt2,INPUT_PULLUP);
 
+  
    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); 
@@ -77,6 +82,8 @@ void loop() {
   
   transmit_data[0] = map(analogRead(JpinX),0,1023,0,180);
   transmit_data[1] = map(analogRead(JpinY),0,1023,0,180);
+  transmit_data[2] = digitalRead(Butt1);
+  transmit_data[3] = digitalRead(Butt2);
   
   
   if (radio.write(&transmit_data, sizeof(transmit_data))) {    // отправка пакета transmit_data
